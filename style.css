@@ -37,18 +37,30 @@ body {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
+    /* Add this to prevent it from overlapping buttons on small screens */
+    z-index: -1;
 }
 
-.nav-btn {
-    background-color: #007bff;
-    color: white;
+.controls {
+    margin-left: auto;
+    display: flex;
+    gap: 10px;
+}
+
+.edit-btn {
+    background-color: #ffc107;
+    color: #212529;
     border: none;
-    padding: 10px 20px;
-    font-size: 1.5rem;
-    font-weight: bold;
+    padding: 10px 22px;
+    font-size: 1.1rem;
+    font-weight: 600;
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.1s;
+}
+
+.edit-btn:hover {
+    background-color: #e0a800;
 }
 
 .save-btn {
@@ -61,7 +73,6 @@ body {
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.1s;
-    margin-left: auto; /* Pushes the save button to the right */
 }
 
 .save-btn:hover {
@@ -75,6 +86,18 @@ body {
 .save-btn.saved {
     background-color: #1a682b;
     cursor: default;
+}
+
+.nav-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
 }
 
 .nav-btn:hover {
@@ -92,11 +115,40 @@ body {
     transform: none;
 }
 
+/* --- Edit Mode Control --- */
+
+/* By default (in edit mode), hide the edit button and show the save button */
+.controls .edit-btn {
+    display: none;
+}
+.controls .save-btn {
+    display: inline-block;
+}
+
+/* In view-mode, show the edit button and hide the save button */
+.view-mode .controls .edit-btn {
+    display: inline-block;
+}
+.view-mode .controls .save-btn {
+    display: none;
+}
+
+.view-mode .day {
+    cursor: default;
+    pointer-events: none;
+}
+
+/* In view-mode, marked days shouldn't have a hover effect */
+.view-mode .day.marked:hover {
+    background-color: #ff4d4d;
+}
+
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 25px;
 }
+
 
 .month-container {
     border: 1px solid #dee2e6;

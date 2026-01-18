@@ -100,8 +100,9 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const container = document.querySelector('.container');
-    let touchStartX = 0;
-    let touchEndX = 0;
+    let pointerStartX = 0;
+    let pointerEndX = 0;
+    let isDragging = false;
 
     const changeYear = (direction) => {
         if (direction === 'next') {
@@ -113,25 +114,56 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const handleGesture = () => {
+        const swipeThreshold = 50; // Minimum distance for a swipe/drag
+        if (pointerStartX - pointerEndX > swipeThreshold) {
+            changeYear('next'); // Swiped/dragged left
+        } else if (pointerEndX - pointerStartX > swipeThreshold) {
+            changeYear('prev'); // Swiped/dragged right
+        }
+    };
+
+    // Touch Events
     container.addEventListener('touchstart', e => {
-        touchStartX = e.changedTouches[0].screenX;
+        pointerStartX = e.changedTouches[0].screenX;
     }, { passive: true });
 
     container.addEventListener('touchend', e => {
-        touchEndX = e.changedTouches[0].screenX;
-        handleSwipe();
+        pointerEndX = e.changedTouches[0].screenX;
+        handleGesture();
     });
 
-    const handleSwipe = () => {
-        const swipeThreshold = 50; // Minimum distance for a swipe
-        if (touchStartX - touchEndX > swipeThreshold) {
-            // Swiped left
-            changeYear('next');
-        } else if (touchEndX - touchStartX > swipeThreshold) {
-            // Swiped right
-            changeYear('prev');
-        }
-    };
+    // Mouse Events
+    container.addEventListener('mousedown', e => {
+        // Only for left click
+        if (e.button !== 0) return;
+        pointerStartX = e.screenX;
+        isDragging = true;
+        // Prevent text selection during drag
+        e.preventDefault();
+    });
+
+    container.addEventListener('mouseup', e => {
+        if (!isDragging || e.button !== 0) return;
+        isDragging = false;
+        pointerEndX = e.screenX;
+        handleGesture();
+    });
+
+    container.addEventListener('mouseleave', e => {
+        if (!isDragging) return;
+        isDragging = false;
+        pointerEndX = e.screenX;
+        handleGesture();
+    });
+
+    // If the mouse is moved, we are dragging
+    container.addEventListener('mousemove', e => {
+        if (!isDragging) return;
+        // This prevents clicks from firing on the dragged element
+        e.preventDefault();
+    });
+
 
     prevYearBtn.addEventListener('click', () => changeYear('prev'));
     nextYearBtn.addEventListener('click', () => changeYear('next'));
